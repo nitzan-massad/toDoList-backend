@@ -7,7 +7,7 @@ const authRouters = require('./routes/authRouters')
 const itemRouters = require('./routes/itemRouters')
 const checkAuth= require('./middleware/check-auth')
 
-const port = 5000
+const port = process.env.PORT | 5000
 
 
 app.use(bodyParser.json());
