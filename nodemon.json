@@ -1,8 +1,0 @@
-{
-    "env": {
-        "DB_USER": "nitzanmassad",
-        "DB_PASSWORD":"SsORFmMVpGzJO5p1",
-        "DB_NAME":"test",
-        "JWT_KEY":"supersuper_dont-share-312423432-409-23434324423424234dsffsfsdf=sdfsdfsfsdf=sdffdsfs-sdfsfs!#!#$"
-    }
-}
