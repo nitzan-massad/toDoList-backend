@@ -1,2 +1,6 @@
 /node_modules
 /.idea
+/nodemon - Copy.json
+/nodemon.json
+/.vs
+/package-lock.json
