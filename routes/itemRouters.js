@@ -16,4 +16,11 @@ router.patch(
   itemController.markAnItemAsCompletedOrNot
 )
 
+router.patch(
+  '/edit-item-title',
+  [check('itemId').not().isEmpty()],
+  itemController.editItemTitle
+)
+router.delete('/delete-item/:itemId', itemController.deleteItem)
+
 module.exports = router
