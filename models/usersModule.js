@@ -8,6 +8,7 @@ const userSchema = new Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true, minlength: 6 },
+  contributorOn: [{ type: mongoose.Types.ObjectId, required: false, ref: 'List' }],
   lists: [{ type: mongoose.Types.ObjectId, required: false, ref: 'List' }]
 })
 

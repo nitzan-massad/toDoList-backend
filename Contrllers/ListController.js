@@ -5,6 +5,7 @@ const List = require('../models/ListModule')
 const ListItem = require('../models/ListItemModule')
 const User = require('../models/usersModule')
 const HttpError = require('../models/http-error')
+const authorizationUtils = require('../Utils/authorizationUtils')
 
 exports.postCreateList = async (req, res, next) => {
   const errors = validationResult(req)
@@ -58,10 +59,15 @@ exports.getAllUserLists = async (req, res, next) => {
     )
   }
   try {
-    userWithLists = await User.findById(req.userData.userId).populate({
-      path: 'lists',
-      populate: { path: 'items' }
-    })
+    userWithLists = await User.findById(req.userData.userId)
+      .populate({
+        path: 'lists',
+        populate: { path: 'items' }
+      })
+      .populate({
+        path: 'contributorOn',
+        populate: { path: 'items' }
+      })
   } catch (err) {
     console.log(err)
     const error = new HttpError(
@@ -75,9 +81,9 @@ exports.getAllUserLists = async (req, res, next) => {
       new HttpError('Could not find lists for the provided user id.', 404)
     )
   }
-
   res.json({
-    lists: userWithLists.lists.map(list => list.toObject({ getters: true }))
+    lists: userWithLists.lists.map(list => list.toObject({ getters: true })),
+    contributorOn: userWithLists.contributorOn.map(list => list.toObject({ getters: true }))
   })
 }
 
@@ -91,21 +97,11 @@ exports.updateListColor = async (req, res, next) => {
   const { color } = req.body
   const listId = req.params.lid
 
-  let list
-  try {
-    list = await List.findById(listId)
-  } catch (err) {
-    const error = new HttpError(
-      'Something went wrong, could not update List.',
-      500
-    )
-    return next(error)
-  }
-
-  if (list.creator.toString() !== req.userData.userId) {
-    const error = new HttpError('You are not allowed to edit this list', 401)
-    return next(error)
-  }
+  let list = await authorizationUtils.listPopulateAndAutorizationUse(
+    listId,
+    req.userData.userId,
+    next
+  )
 
   list.color = color
   try {
@@ -124,27 +120,11 @@ exports.updateListColor = async (req, res, next) => {
 exports.deleteList = async (req, res, next) => {
   const listId = req.params.lid
 
-  let list
-  try {
-    list = await List.findById(listId).populate('creator')
-  } catch (err) {
-    console.log(err)
-    const error = new HttpError(
-      'Something went wrong, could not delete list.',
-      500
-    )
-    return next(error)
-  }
-
-  if (!list) {
-    const error = new HttpError('Could not find list for this id.', 404)
-    return next(error)
-  }
-
-  if (list.creator.id.toString() !== req.userData.userId) {
-    const error = new HttpError('You are not allowed to edit this list', 401)
-    return next(error)
-  }
+  let list = await authorizationUtils.listPopulateAndAutorizationUse(
+    listId,
+    req.userData.userId,
+    next
+  )
 
   try {
     const sess = await mongoose.startSession()
@@ -166,4 +146,3 @@ exports.deleteList = async (req, res, next) => {
 
   res.status(200).json({ message: 'Deleted place.' })
 }
-

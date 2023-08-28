@@ -7,6 +7,7 @@ const listSchema = new Schema({
   description: { type: String, required: false },
   color: { type: String, default: 'none', required: false },
   items: [{ type: mongoose.Types.ObjectId, required: false, ref: 'ListItem' }],
+  contributors:[{ type: mongoose.Types.ObjectId, required: false, ref: 'User' }],
   creator: { type: mongoose.Types.ObjectId, required: true, ref: 'User' }
 })
 

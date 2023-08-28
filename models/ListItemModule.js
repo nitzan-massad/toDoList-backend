@@ -8,6 +8,7 @@ const ListItemSchema = new Schema({
   creationDate: { type: Date, default: Date.now },
   completedDate: { type: Date, required: false },
   isDone: { type: Boolean, default: false } ,
+  creator: {type: mongoose.Types.ObjectId, required: true ,ref: 'User'},
   list: { type: mongoose.Types.ObjectId, required: true, ref: 'List' }
 })
 
