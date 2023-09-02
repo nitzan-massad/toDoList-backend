@@ -76,25 +76,29 @@ exports.signup = async (req, res, next) => {
     )
     return next(error)
   }
-  res
-    .status(201)
-    .json({
-      userId: createdUser.id,
-      firstName: createdUser.firstName,
-      lastName: createdUser.lastName,
-      token: token
-    })
+  res.status(201).json({
+    userId: createdUser.id,
+    firstName: createdUser.firstName,
+    lastName: createdUser.lastName,
+    token: token
+  })
   //.json({ user: createdUser.toObject({ getters: true }), token: token })
 }
 
 exports.login = async (req, res, next) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422)
+    )
+  }
   const { email, password } = req.body
 
   let existingUser
-
   try {
     existingUser = await User.findOne({ email: email })
   } catch (err) {
+    console.log(err)
     const error = new HttpError(
       'Loggin in failed, please try again later.',
       500
@@ -134,6 +138,7 @@ exports.login = async (req, res, next) => {
       { expiresIn: '30d' }
     )
   } catch (err) {
+    console.log(err)
     const error = new HttpError('login failed, please try again later.', 500)
     return next(error)
   }
@@ -145,4 +150,3 @@ exports.login = async (req, res, next) => {
     token: token
   })
 }
-
