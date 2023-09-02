@@ -7,7 +7,8 @@ exports.isAuthorHavePermissions = (authorId, listCreator,contributors, next) => 
   const contributorIndex = contributors.findIndex(x => x.toString === authorId)
   if (listCreator !== authorId && contributorIndex < 0) {
     const error = new HttpError('You are not allowed to edit this', 401)
-    return next(error)
+     next(error)
+     throw error;
   }
 }
 

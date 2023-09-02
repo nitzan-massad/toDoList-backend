@@ -3,7 +3,7 @@ const app = express()
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser')
 const listsRouters = require('./routes/listsRouters')
-const authRouters = require('./routes/authRouters')
+const userRouters = require('./routes/userRouters')
 const itemRouters = require('./routes/itemRouters')
 const checkAuth= require('./middleware/check-auth')
 
@@ -20,10 +20,10 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');  
   next();
 });
-app.use('/api/users',authRouters)
+app.use('/api/users',userRouters)
 app.use(checkAuth)
-app.use(listsRouters)
-app.use(itemRouters)
+app.use('/list',listsRouters)
+app.use('/item',itemRouters)
 
 
 app.use((req, res, next) => {

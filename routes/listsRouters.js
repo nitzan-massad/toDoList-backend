@@ -17,6 +17,12 @@ router.patch(
   listController.updateListColor
 )
 
+router.post(
+  '/add-item-to-list',
+  [check('itemTitle').not().isEmpty(), check('listId').not().isEmpty()],
+  listController.addItemToList
+)
+
 router.delete('/delete-list/:lid', listController.deleteList)
 
 module.exports = router
