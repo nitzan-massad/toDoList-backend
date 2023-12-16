@@ -1,11 +1,15 @@
 const { validationResult } = require('express-validator')
 const mongoose = require('mongoose')
+const { ObjectId } = require('mongoose').Types;
+const { Mutex } = require('async-mutex')
 
 const List = require('../models/ListModule')
 const ListItem = require('../models/ListItemModule')
 const User = require('../models/usersModule')
 const HttpError = require('../models/http-error')
 const authorizationUtils = require('../Utils/authorizationUtils')
+const mutex_updateItemsOrderInList = new Mutex()
+
 
 exports.postCreateList = async (req, res, next) => {
   const errors = validationResult(req)
@@ -108,7 +112,7 @@ exports.addItemToList = async (req, res, next) => {
     const sess = await mongoose.startSession()
     sess.startTransaction()
     await newItem.save({ session: sess })
-    list.items.push(newItem)
+    list.items.unshift(newItem)
     await list.save({ session: sess })
     await sess.commitTransaction()
   } catch (err) {
@@ -181,4 +185,45 @@ exports.deleteList = async (req, res, next) => {
   }
 
   res.status(200).json({ message: 'Deleted place.' })
+}
+
+exports.updateItemsOrderInList = async (req, res, next) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422)
+    )
+  }
+  const { itemsId, itemsPositionEnd } = req.body
+  const listId = req.params.lid
+  const release = await mutex_updateItemsOrderInList.acquire(listId)
+  let list = await authorizationUtils.listPopulateAndAutorizationUse(
+    listId,
+    req.userData.userId,
+    next
+  )
+
+  const targetItemId = new ObjectId(itemsId);
+  const newListOrder = Array.from(list.items)
+  const compareId = (item)=>{
+     return item._id.equals(targetItemId)
+  }
+  const itemsPositionStart = newListOrder.findIndex(compareId)
+   const [removed] = newListOrder.splice(itemsPositionStart, 1)
+  newListOrder.splice(itemsPositionEnd, 0, removed)
+  list.items = newListOrder
+
+  try {
+    await list.save()
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not update List.',
+      500
+    )
+    return next(error)
+  }finally{
+    release()
+  }
+
+  res.status(200).json({ list: list.toObject({ getters: true }) })
 }

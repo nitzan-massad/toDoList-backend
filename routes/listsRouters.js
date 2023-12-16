@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const { check } = require('express-validator')
 
-const listController = require('../Contrllers/ListController')
+const listController = require('../Contrllers/listController')
 
 router.post('/get-all-user-lists/', listController.getAllUserLists)
 router.post(
@@ -24,5 +24,11 @@ router.post(
 )
 
 router.delete('/delete-list/:lid', listController.deleteList)
+
+router.patch(
+  '/update-items-order/:lid',
+  [check('itemsId').not().isEmpty(), check('itemsPositionEnd').not().isEmpty()],
+  listController.updateItemsOrderInList
+)
 
 module.exports = router
