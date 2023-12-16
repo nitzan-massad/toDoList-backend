@@ -44,3 +44,19 @@ exports.listPopulateAndAutorizationUse = async (listId, authorId, next) => {
   this.isAuthorHavePermissions(list.creator.id.toString(),authorId, list.contributors, next)
   return list
 }
+exports.listPopulateItemsAndAutorizationUse = async (listId, authorId, next) => {
+  let list
+  try {
+    list = await List.findById(listId).populate('creator').populate('items')
+  } catch (err) {
+    const error = new HttpError('Action failed, please try again.', 500)
+    return next(error)
+  }
+
+  if (!list) {
+    const error = new HttpError('Could not find list for provided id.', 404)
+    return next(error)
+  }
+  this.isAuthorHavePermissions(list.creator.id.toString(),authorId, list.contributors, next)
+  return list
+}
