@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const { check } = require('express-validator')
 
-const listController = require('../Contrllers/listController')
+const listController = require('../Contrllers/ListController')
 
 router.post('/get-all-user-lists/', listController.getAllUserLists)
 router.post(
