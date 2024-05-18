@@ -15,7 +15,7 @@ module.exports = (req, res, next) => {
     next()
   } catch (err) {
     console.log(err)
-    const error = new HttpError('authentication failed', 401)
+    const error = new HttpError('authentication for "To Do List" Have failed', 401)
     return next(error)
   }
 }
