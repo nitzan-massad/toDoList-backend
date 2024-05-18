@@ -41,7 +41,7 @@ app.use((error, req, res, next) => {
 });
 
 
-console.log('nitz '+ process.env.DB_USER)
+console.log('process.env.DB_USER '+ process.env.DB_USER)
 mongoose
   .connect(
     `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.0lmj6ui.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
@@ -51,6 +51,6 @@ mongoose
     console.log(`ToDoList app listening on port ${port}`)
   })
   .catch(err => {
-    console.log(err);
+    console.log('process.env.DB_USER '+ process.env.DB_USER+' error:'+err);
   });
 
