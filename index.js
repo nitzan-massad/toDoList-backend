@@ -6,7 +6,7 @@ const listsRouters = require('./routes/listsRouters')
 const userRouters = require('./routes/userRouters')
 const itemRouters = require('./routes/itemRouters')
 const checkAuth= require('./middleware/check-auth')
-
+require('dotenv').config();
 const port = process.env.PORT | 5000
 
 
@@ -40,6 +40,8 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || 'An unknown error occurred!' });
 });
 
+
+console.log('nitz '+ process.env.DB_USER)
 mongoose
   .connect(
     `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.0lmj6ui.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
