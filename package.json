@@ -25,5 +25,8 @@
   "devDependencies": {
     "nodemon": "^2.0.22",
     "prettier": "2.8.8"
+  },
+  "engines": {
+    "node": "22.13.0"
   }
 }
